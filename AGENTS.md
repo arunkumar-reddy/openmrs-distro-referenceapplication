@@ -7,6 +7,19 @@ This is the **OpenMRS 3.0 Reference Application distribution** — an assembly p
 ## Build & Test Commands
 
 ```bash
+
+#Start the container
+docker compose up
+
+#Stop the container
+docker compose down
+
+#Build the backend image is
+docker buildx build -t openmrs/backend:custom .
+
+#Build the frontend image is 
+cd frontend && docker buildx build -t openmrs/frontend:custom .
+
 # Full distribution (Java + frontend)
 mvn -P distro,frontend clean install
 
