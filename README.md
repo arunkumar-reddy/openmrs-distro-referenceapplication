@@ -11,28 +11,28 @@ https://dev3.openmrs.org and https://o3.openmrs.org.
 docker compose up
 ```
 
-or to enable SSL,
+The OpenMRS 3.x UI is accessible at http://localhost/openmrs/spa
 
-```bash
-docker compose -f docker-compose.yml -f docker-compose.ssl.yml up
-```
-
-The OpenMRS 3.x UI is accessible at http://localhost/openmrs/spa or https://localhost/openmrs/spa
-
-OpenMRS Legacy UI is accessible at http://localhost/openmrs or https://localhost/openmrs
+OpenMRS Legacy UI is accessible at http://localhost/openmrs
 
 ### Production deployment with SSL
 
-For production deployments with HTTPS/SSL certificates:
+For production deployments with HTTPS/SSL certificates, create a `.env` file in the project root:
 
-```bash
-SSL_MODE=prod \
-CERT_WEB_DOMAINS=your-domain.com \
-CERT_CONTACT_EMAIL=admin@your-domain.com \
-docker compose -f docker-compose.yml -f docker-compose.ssl.yml up
+```env
+COMPOSE_FILE=docker-compose.yml:docker-compose.ssl.yml
+SSL_MODE=prod
+CERT_WEB_DOMAINS=your-domain.com
+CERT_CONTACT_EMAIL=admin@your-domain.com
 ```
 
-See the [SSL/HTTPS Configuration](#sslhttps-configuration) section for detailed setup instructions.
+Then start the application as usual:
+
+```bash
+docker compose up
+```
+
+The `COMPOSE_FILE` variable tells Docker Compose to automatically include the SSL overlay, so you never need to pass `-f` flags. See the [SSL/HTTPS Configuration](#sslhttps-configuration) section for detailed setup instructions.
 
 ## Overview
 
@@ -55,12 +55,25 @@ When running with SSL enabled (using `docker-compose.ssl.yml`), an additional se
 
 The application can be run with SSL/HTTPS support for both development and production environments.
 
+SSL configuration lives in `docker-compose.ssl.yml`, which is included alongside the base `docker-compose.yml`. The recommended way to enable it is via a `.env` file in the project root:
+
+```env
+COMPOSE_FILE=docker-compose.yml:docker-compose.ssl.yml
+```
+
+This tells Docker Compose to automatically include the SSL overlay, so all commands remain simply `docker compose up`, `docker compose down`, etc. without needing `-f` flags. All SSL-related environment variables (like `SSL_MODE` and `CERT_WEB_DOMAINS`) can also be set in this file.
+
 ### Development mode (self-signed certificates)
 
-For local development with HTTPS, simply run with the SSL compose file:
+For local development with HTTPS:
+
+```env
+# .env
+COMPOSE_FILE=docker-compose.yml:docker-compose.ssl.yml
+```
 
 ```bash
-docker compose -f docker-compose.yml -f docker-compose.ssl.yml up
+docker compose up
 ```
 
 This will:
@@ -76,20 +89,26 @@ The application will be accessible at:
 
 ### Production mode (Let's Encrypt)
 
-For production deployments with valid SSL certificates from Let's Encrypt:
+For production deployments with valid SSL certificates from Let's Encrypt, create a `.env` file:
+
+```env
+# .env
+COMPOSE_FILE=docker-compose.yml:docker-compose.ssl.yml
+SSL_MODE=prod
+CERT_WEB_DOMAINS=example.com
+CERT_CONTACT_EMAIL=admin@example.com
+```
 
 ```bash
-SSL_MODE=prod \
-CERT_WEB_DOMAINS=example.com \
-CERT_CONTACT_EMAIL=admin@example.com \
-docker compose -f docker-compose.yml -f docker-compose.ssl.yml up
+docker compose up
 ```
 
 **Configuration options**:
 
 - `SSL_MODE=prod` - Use Let's Encrypt certificates (required)
-- `CERT_WEB_DOMAINS` - Your domain name(s), comma-separated (e.g., `example.com,www.example.com`)
+- `CERT_WEB_DOMAINS` - Your domain name(s), comma-separated (e.g., `example.com,www.example.com`). The first domain is used as the primary domain for certificate paths and the nginx `server_name` directive.
 - `CERT_CONTACT_EMAIL` - Email for Let's Encrypt notifications
+- `CERT_WEB_DOMAIN_COMMON_NAME` - (Optional) Override the primary domain. By default, this is derived from the first domain in `CERT_WEB_DOMAINS`. You only need to set this if you want the certificate's common name to differ from the first domain.
 - `SSL_STAGING=true` - (Optional) Use Let's Encrypt staging environment for testing
 
 **The certbot container will**:
@@ -103,17 +122,18 @@ docker compose -f docker-compose.yml -f docker-compose.ssl.yml up
 
 ### Testing with Let's Encrypt staging
 
-To test the SSL setup without hitting Let's Encrypt rate limits:
+To test the SSL setup without hitting Let's Encrypt rate limits, add `SSL_STAGING=true` to your `.env` file:
 
-```bash
-SSL_MODE=prod \
-SSL_STAGING=true \
-CERT_WEB_DOMAINS=example.com \
-CERT_CONTACT_EMAIL=admin@example.com \
-docker compose -f docker-compose.yml -f docker-compose.ssl.yml up
+```env
+# .env
+COMPOSE_FILE=docker-compose.yml:docker-compose.ssl.yml
+SSL_MODE=prod
+SSL_STAGING=true
+CERT_WEB_DOMAINS=example.com
+CERT_CONTACT_EMAIL=admin@example.com
 ```
 
-Staging certificates won't be trusted by browsers but allow you to verify the setup works correctly.
+Staging certificates won't be trusted by browsers but allow you to verify the setup works correctly. Remove `SSL_STAGING` (or set it to `false`) once you've confirmed the setup works.
 
 ### Certificate profiles
 
@@ -125,15 +145,11 @@ Let's Encrypt offers different certificate profiles with varying validity period
 | `tlsserver` | 45 days | Shorter validity for improved security |
 | `shortlived` | 6 days | Required for IP address certificates |
 
-To request a specific profile, use the `CERT_PROFILE` environment variable:
+To request a specific profile, add `CERT_PROFILE` to your `.env` file:
 
-```bash
-# Request 45-day certificates
-SSL_MODE=prod \
-CERT_PROFILE=tlsserver \
-CERT_WEB_DOMAINS=example.com \
-CERT_CONTACT_EMAIL=admin@example.com \
-docker compose -f docker-compose.yml -f docker-compose.ssl.yml up
+```env
+# .env (additions)
+CERT_PROFILE=tlsserver
 ```
 
 **Note**: Let's Encrypt is transitioning all certificates to 45-day validity by 2028. Using the `tlsserver` profile allows you to opt-in to shorter certificates now.
@@ -142,12 +158,12 @@ docker compose -f docker-compose.yml -f docker-compose.ssl.yml up
 
 Let's Encrypt now supports issuing certificates for publicly-addressable IP addresses. These certificates must use the `shortlived` profile (6-day validity).
 
-```bash
-# Certificate for an IP address (shortlived profile auto-selected)
-SSL_MODE=prod \
-CERT_WEB_DOMAINS=203.0.113.50 \
-CERT_CONTACT_EMAIL=admin@example.com \
-docker compose -f docker-compose.yml -f docker-compose.ssl.yml up
+```env
+# .env
+COMPOSE_FILE=docker-compose.yml:docker-compose.ssl.yml
+SSL_MODE=prod
+CERT_WEB_DOMAINS=203.0.113.50
+CERT_CONTACT_EMAIL=admin@example.com
 ```
 
 **Important notes for IP address certificates**:
@@ -158,11 +174,8 @@ docker compose -f docker-compose.yml -f docker-compose.ssl.yml up
 
 You can also mix domain names and IP addresses:
 
-```bash
-SSL_MODE=prod \
-CERT_WEB_DOMAINS=example.com,203.0.113.50 \
-CERT_CONTACT_EMAIL=admin@example.com \
-docker compose -f docker-compose.yml -f docker-compose.ssl.yml up
+```env
+CERT_WEB_DOMAINS=example.com,203.0.113.50
 ```
 
 When any IP address is included, the shortlived profile is required and will be automatically enforced.
@@ -175,39 +188,57 @@ While certificates renew automatically in production mode, you can manually forc
 
 ```bash
 # Force renewal
-docker compose -f docker-compose.yml -f docker-compose.ssl.yml exec certbot \
-  certbot renew --force-renewal --webroot -w /var/www/certbot
+docker compose exec certbot certbot renew --force-renewal --webroot -w /var/www/certbot
 
 # Reload nginx to pick up new certificates
-docker compose -f docker-compose.yml -f docker-compose.ssl.yml exec gateway \
-  nginx -s reload
+docker compose exec gateway nginx -s reload
 ```
 
 **If certbot container has stopped or for one-off renewal**:
 
 ```bash
 # Run certbot in one-off mode (override entrypoint to run certbot directly)
-docker compose -f docker-compose.yml -f docker-compose.ssl.yml run --rm \
-  --entrypoint certbot certbot \
+docker compose run --rm --entrypoint certbot certbot \
   renew --force-renewal --webroot -w /var/www/certbot
 
 # Reload nginx
-docker compose -f docker-compose.yml -f docker-compose.ssl.yml exec gateway \
-  nginx -s reload
+docker compose exec gateway nginx -s reload
 ```
 
 **Check certificate expiration**:
 
 ```bash
 # If certbot container is running
-docker compose -f docker-compose.yml -f docker-compose.ssl.yml exec certbot \
-  certbot certificates
+docker compose exec certbot certbot certificates
 
 # If certbot container is stopped
-docker compose -f docker-compose.yml -f docker-compose.ssl.yml run --rm \
-  --entrypoint certbot certbot \
-  certificates
+docker compose run --rm --entrypoint certbot certbot certificates
 ```
+
+### Regenerating certificates
+
+If you need to start fresh with certificates (e.g., after changing domains), delete the letsencrypt volume and restart:
+
+```bash
+docker compose down
+
+# Remove only this project's letsencrypt volume
+docker volume rm "$(docker compose config | awk '/^name:/{print $2}')_letsencrypt-data"
+
+docker compose up
+```
+
+The certbot entrypoint skips certificate generation when it finds existing certificates for the configured domain. Removing the volume forces it to go through the full setup process again.
+
+### Running with Grafana
+
+The service can run with Grafana for monitoring logs. You can run it with:
+```bash
+docker compose -f docker-compose.yml -f docker-compose.override.yml -f docker-compose.grafana.yml up
+```
+Grafana will be available at http://localhost:3000. Use admin as username and see docker-compose.grafana.yml for the initial password.
+
+If you would like to use grafana in your distro, you just need to copy over `monitoring` and `docker-compose.grafana.yml`.
 
 ### Environment variables reference
 
@@ -216,7 +247,7 @@ docker compose -f docker-compose.yml -f docker-compose.ssl.yml run --rm \
 | `SSL_MODE` | `dev` | `dev` for self-signed certificates, `prod` for Let's Encrypt |
 | `SSL_STAGING` | `false` | Use Let's Encrypt staging environment (set to `true` for testing) |
 | `CERT_WEB_DOMAINS` | `localhost,127.0.0.1` | Comma-separated list of domain names or IP addresses |
-| `CERT_WEB_DOMAIN_COMMON_NAME` | (first domain) | Override the primary domain name |
+| `CERT_WEB_DOMAIN_COMMON_NAME` | first domain from `CERT_WEB_DOMAINS` | Override the primary domain used for certificate paths and nginx `server_name`. Most users should not set this. |
 | `CERT_CONTACT_EMAIL` | (empty) | Email for Let's Encrypt notifications (required in prod mode) |
 | `CERT_RSA_KEY_SIZE` | `4096` | RSA key size for certificates |
 | `CERT_PROFILE` | (empty) | Certificate profile: `classic` (90 days), `tlsserver` (45 days), or `shortlived` (6 days). Auto-set to `shortlived` for IP addresses |
