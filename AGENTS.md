@@ -32,7 +32,8 @@ docker compose down
 docker buildx build -t openmrs/backend:custom .
 
 #Build the frontend image is 
-cd frontend && docker buildx build -t openmrs/frontend:custom .
+#NPM_TOKEN is required to access the print module package from Arun's packages. 
+cd frontend && docker buildx build -t openmrs/frontend:custom . --build-arg NPM_TOKEN=$NPM_TOKEN
 
 # Full distribution (Java + frontend)
 mvn -P distro,frontend clean install
