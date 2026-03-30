@@ -1,6 +1,5 @@
 {
   "frontendModules": {
-    "@arunkumar-reddy/openmrs-print-module": "1.0.0",
     "@openmrs/esm-active-visits-app": "latest",
     "@openmrs/esm-appointments-app": "latest",
     "@openmrs/esm-bed-management-app": "latest",
