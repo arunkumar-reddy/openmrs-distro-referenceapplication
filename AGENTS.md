@@ -4,6 +4,20 @@
 
 This is the **OpenMRS 3.0 Reference Application distribution** — an assembly project that combines core OpenMRS modules (Java) and frontend SPA modules. **It contains no application source code**; instead, it assembles pre-built modules via Maven.
 
+Documentation about OpenMRS can be found here
+
+- Overview - https://openmrs.atlassian.net/wiki/spaces/docs/pages/151093495/Introduction+to+O3+for+Developers
+- Key Repositories - https://openmrs.atlassian.net/wiki/spaces/docs/pages/150962486/Key+O3+Repositories
+- Configuration - https://openmrs.atlassian.net/wiki/spaces/docs/pages/151093674/Configure+O3
+- Frontend modules - https://openmrs.atlassian.net/wiki/spaces/docs/pages/150930084/Frontend+Modules
+- Recipes for O3 - https://openmrs.atlassian.net/wiki/spaces/docs/pages/151093920/Recipes+for+O3+Development
+
+- Refer to .claude directory for skills such as playwright. You can use playwright to load and interact with webpages. 
+- Use the following auth credentials to login
+- Username - admin
+- Password - Admin123
+- Use the following flag when running playwright to disable web security such as CORS for our testing purposes.
+
 ## Build & Test Commands
 
 ```bash
@@ -18,7 +32,8 @@ docker compose down
 docker buildx build -t openmrs/backend:custom .
 
 #Build the frontend image is 
-cd frontend && docker buildx build -t openmrs/frontend:custom .
+#NPM_TOKEN is required to access the print module package from Arun's packages. 
+cd frontend && docker buildx build -t openmrs/frontend:custom . --build-arg NPM_TOKEN=$NPM_TOKEN
 
 # Full distribution (Java + frontend)
 mvn -P distro,frontend clean install

@@ -7,6 +7,7 @@ services:
       - backend
     ports:
       - "80:80"
+      # Replace with 8080:80 if 80 is already occupied
 
   frontend:
     image: openmrs/frontend:custom
@@ -47,7 +48,7 @@ services:
     restart: "unless-stopped"
     command: "mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_general_ci"
     healthcheck:
-      test: "mysql --user=${OMRS_DB_USER:-openmrs} --password=${OMRS_DB_PASSWORD:-openmrs} --execute \"SHOW DATABASES;\""
+      test: 'mysql --user=${OMRS_DB_USER:-openmrs} --password=${OMRS_DB_PASSWORD:-openmrs} --execute "SHOW DATABASES;"'
       interval: 3s
       timeout: 1s
       retries: 5
