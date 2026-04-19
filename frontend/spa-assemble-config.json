@@ -42,7 +42,8 @@
     "@openmrs/esm-stock-management-app": "next",
     "@openmrs/esm-system-admin-app": "latest",
     "@openmrs/esm-user-onboarding-app": "latest",
-    "@openmrs/esm-ward-app": "latest"
+    "@openmrs/esm-ward-app": "latest",
+    "@openmrs/esm-offline-tools-app": "latest"
   },
   "excludedFrontendModules": []
 }

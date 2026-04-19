@@ -1,17 +1,172 @@
 {
+  "@openmrs/esm-home-app":{
+    "extensionSlots": {
+      "homepage-dashboard-slot": {
+        "configure": {
+          "service-queues-dashboard-link": {
+            "Display conditions": {
+              "privileges": [
+                "Get Concepts", "Get Encounter Types", "Get Locations", "Get Patients", 
+                "Get Queue Entries", "Get Queue Rooms", "Get Queues"
+              ]
+            }
+          },
+          "billing-dashboard-link": {
+            "Display conditions": {
+              "privileges": [
+                "App: Access Cashier Tasks", "App: View Cashier App", "Manage Cashier Bills", 
+                "Manage Cashier Metadata", "Manage Cashier Timesheets", "Task: Cashier Timesheets", 
+                "Task: Manage Cashier Metadata", "Task: Manage Cashier Module", "Task: View Cashier Reports", 
+                "View Cashier Bills", "View Cashier Metadata", "View Cashier Timesheets"
+              ]
+            }
+          },
+          "clinical-appointments-dashboard-link": {
+            "Display conditions": {
+              "privileges": [
+                "Get Providers", "Manage Appointment Services", "Manage Appointment Specialities", 
+                "Manage Appointments", "Reset Appointment Status"
+              ]
+            }
+          },
+          "laboratory-dashboard-link": {
+            "Display conditions": {
+              "privileges": [
+                "Add Encounters", "Add Observations", "Add Orders", "Edit Encounters", 
+                "Edit Observations", "Edit Orders", "Get Admission Locations", "Get Beds", 
+                "Get Care Settings", "Get Concepts", "Get Encounter Roles", "Get Encounters", 
+                "Get Observations", "Get Order Frequencies", "Get Order Set Attribute Types", 
+                "Get Order Sets", "Get Order Types", "Get Orders", "Get Patients", "Get Providers", 
+                "Get Users", "View Order Types", "View Orders"
+              ]
+            }
+          },
+          "ward-dashboard-link": {
+            "Display conditions": {
+              "privileges": [
+                "Get Admission Locations", "Get Bed Tags", "Get Bed Type", 
+                "Get Beds", "Get Concept Map Types", "Get Concept Reference Terms", 
+                "View Metadata Via Mapping"
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
+  "@openmrs/esm-ward-app":{
+    "extensionSlots": {
+      "action-menu-ward-patient-items-slot": {
+        "add": [
+          "order-basket-action-menu"
+        ]
+      },
+      "ward-patient": {
+        "configure": {
+          "ward-patient-notes": {
+            "Display conditions": {
+              "privileges": [
+                "Add Encounters", "Edit Diagnoses", "Edit Encounters", "Edit Notes", 
+                "Get Concept Attribute Types", "Get Concept Classes", "Get Concept Datatypes", 
+                "Get Concept Map Types", "Get Concept Proposals", "Get Concept Reference Terms", 
+                "Get Conditions", "Get Diagnoses", "Get Encounter Roles", "Get Encounter Types", 
+                "Get Provider Attribute Types", "Get Providers"
+              ]
+            }
+          },
+          "ward-patient-transfer-swap": {
+            "Display conditions": {
+              "privileges": [
+                "Add Encounters", "Assign Beds", "Edit Admission Locations", 
+                "Edit Encounters", "Get Encounter Roles", "Get Provider Attribute Types", 
+                "Get Providers", "Get Queue Entries"
+              ]
+            }
+          },
+          "ward-patient-discharge": {
+            "Display conditions": {
+              "privileges": [
+                "Add Encounters", "Assign Beds", "Edit Admission Locations", 
+                "Edit Encounters", "Get Encounter Roles", "Get Provider Attribute Types", 
+                "Get Providers", "Get Queue Entries"
+              ]
+            }
+          },
+          "ward-patient-clinical-forms": {
+            "Display conditions": {
+              "privileges": [
+                "Add Encounters", "Add Observations", "Edit Encounters", "Edit Observations", 
+                "Form Entry", "Get Encounter Roles", "Get Providers", "Preview Forms", 
+                "View Forms"
+              ]
+            }
+          },
+          "ward-patient-order-basket": {
+            "Display conditions": {
+              "privileges": [
+                "Add Encounters", "Add Orders", "Edit Encounters", "Edit Orders", 
+                "Get Concept Attribute Types", "Get Concept Classes", "Get Concept Datatypes", 
+                "Get Concept Map Types", "Get Concept Proposals", "Get Concept Reference Terms", 
+                "Get Encounter Roles", "Get Encounter Types", "Get Order Frequencies", 
+                "Get Order Set Attribute Types", "Get Order Sets", "Get Order Types", 
+                "Get Providers", "View Concept Classes", "View Concept Datatypes", 
+                "View Concept Proposals", "View Order Types", "View Orders"
+              ]
+            }
+          }
+        }
+      }
+    }
+  },
   "@openmrs/esm-patient-chart-app": {
     "restrictByVisitLocationTag": true,
     "showUpcomingAppointments": true,
     "extensionSlots": {
-      "action-menu-patient-chart-items-slot": {
-        "order": ["order-basket-action-menu"]
-      }
-    }
-  },
-  "@openmrs/esm-ward-app": {
-    "extensionSlots": {
-      "action-menu-ward-patient-items-slot": {
-        "add": ["order-basket-action-menu"]
+      "patient-chart": {
+        "configure": {
+          "patient-chart-order-basket": {
+            "Display conditions": {
+              "privileges": [
+                "Add Encounters", "Add Orders", "Edit Encounters", "Edit Orders", 
+                "Get Concept Attribute Types", "Get Concept Classes", "Get Concept Datatypes", 
+                "Get Concept Map Types", "Get Concept Proposals", "Get Concept Reference Terms", 
+                "Get Encounter Roles", "Get Encounter Types", "Get Order Frequencies", 
+                "Get Order Set Attribute Types", "Get Order Sets", "Get Order Types", 
+                "Get Providers", "View Concept Classes", "View Concept Datatypes", 
+                "View Concept Proposals", "View Order Types", "View Orders"
+              ]
+            }
+          },
+          "visit-note": {
+            "Display conditions": {
+              "privileges": [
+                "Add Encounters", "Edit Diagnoses", "Edit Encounters", "Edit Notes", 
+                "Get Concept Attribute Types", "Get Concept Classes", "Get Concept Datatypes", 
+                "Get Concept Map Types", "Get Concept Proposals", "Get Concept Reference Terms", 
+                "Get Conditions", "Get Diagnoses", "Get Encounter Roles", "Get Encounter Types", 
+                "Get Provider Attribute Types", "Get Providers"
+              ]
+            }
+          },
+          "patient-chart-clinical-forms": {
+              "Display conditions": {
+                "privileges": [
+                  "Add Encounters", "Add Observations", "Edit Encounters", "Edit Observations", 
+                  "Form Entry", "Get Encounter Roles", "Get Providers", "Preview Forms", 
+                  "View Forms"
+                ]
+              }
+          }
+        }
+      },
+      "patient-chart-orders-dashboard-slot": {
+        "configure": {
+          "patient-orders-dashboard": {
+            "Display conditions": {
+              "privileges": ["Get Orders","View Orders", "View Order Types"]
+            }
+          }
+        }
       }
     }
   },
@@ -52,8 +207,15 @@
   },
   "@openmrs/esm-primary-navigation-app": {
     "logo": {
-      "src": "${openmrsSpaBase}/SHLogoNav.png",
+      "src": "${openmrsSpaBase}/SHLogoWithSideTitleMono.svg",
       "name": "Srinivasa Hospital Logo"
+    },
+    "branding": {
+      "applicationTitle": "Srinivasa Hospital",
+      "favicon": {
+        "src": "${openmrsSpaBase}/SHLogo.svg",
+        "alt": "Srinivasa Hospital Logo"
+      }
     }
   }
 }
