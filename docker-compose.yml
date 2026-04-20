@@ -24,7 +24,7 @@ services:
       - backend
 
   backend:
-    image: openmrs/openmrs-reference-application-3-backend:${TAG:-qa}
+    image: openmrs/backend:custom
     restart: "unless-stopped"
     depends_on:
       - db

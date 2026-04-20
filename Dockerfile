@@ -22,6 +22,14 @@ RUN cp -R /openmrs_distro/distro/target/sdk-distro/web/openmrs_modules /openmrs/
 RUN cp -R /openmrs_distro/distro/target/sdk-distro/web/openmrs_owas /openmrs/distribution/openmrs_owas/
 RUN cp -R /openmrs_distro/distro/target/sdk-distro/web/openmrs_config /openmrs/distribution/openmrs_config/
 
+# Download and extract backend configuration from release
+RUN yum update -y && yum install -y wget unzip && \
+    wget https://github.com/arunkumar-reddy/openmrs-content-referenceapplication-demo/releases/latest/download/backend_configuration.zip -O /tmp/config.zip && \
+    unzip /tmp/config.zip -d /tmp/demo-config && \
+    cp -R /tmp/demo-config/configuration/backend_configuration/* /openmrs/distribution/openmrs_config/ && \
+    rm -rf /tmp/config.zip /tmp/demo-config && \
+    yum remove -y wget unzip && yum clean all
+
 # Clean up after copying needed artifacts
 RUN mvn $MVN_ARGS_SETTINGS clean
 

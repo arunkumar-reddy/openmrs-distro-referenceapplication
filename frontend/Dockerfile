@@ -13,9 +13,6 @@ WORKDIR /app
 COPY spa-assemble-config.json .
 COPY spa-build-config.json .
 
-RUN npm config set @arunkumar-reddy:registry https://npm.pkg.github.com && \
-    npm config set //npm.pkg.github.com/:_authToken ${NPM_TOKEN}
-
 ARG CACHE_BUST
 RUN npx --legacy-peer-deps openmrs@${APP_SHELL_VERSION:-next} assemble --manifest --mode config --config spa-assemble-config.json --target ./spa
 RUN npx --legacy-peer-deps openmrs@${APP_SHELL_VERSION:-next} build --build-config spa-build-config.json --target ./spa
