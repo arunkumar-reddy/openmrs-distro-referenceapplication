@@ -60,6 +60,33 @@ services:
     volumes:
       - db-data:/var/lib/mysql
 
+  # MariaDB Backup Service
+  # Periodically dumps the database and writes .sql.gz files to ./backups/
+  # Optionally uploads to Google Drive for offsite redundancy
+  db-backup:
+    build:
+      context: .
+      dockerfile: backup/Dockerfile
+    restart: "unless-stopped"
+    environment:
+      MYSQL_HOST: db
+      MYSQL_USER: ${OMRS_DB_USER:-openmrs}
+      MYSQL_PASSWORD: ${OMRS_DB_PASSWORD:-openmrs}
+      MYSQL_DATABASE: openmrs
+      BACKUP_SCHEDULE: "0 2 * * *"
+      BACKUP_RETENTION_DAYS: "14"
+      BACKUP_DIR: "/backups"
+      # Google Drive settings
+      GDRIVE_ENABLED: "true"
+      GDRIVE_FOLDER: "OpenMRS Backups"
+      GDRIVE_RETENTION_DAYS: "30"
+      GDRIVE_CREDENTIALS_PATH: "/root/.config/rclone/credentials.json"
+    volumes:
+      - ./backups:/backups
+      - ./credentials/srinivasa-hospital.json:/root/.config/rclone/credentials.json:ro
+    depends_on:
+      - db
+
 volumes:
   openmrs-data: ~
   db-data: ~

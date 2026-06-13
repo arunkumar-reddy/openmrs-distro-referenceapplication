@@ -12,3 +12,7 @@ CLAUDE.md
 .cursor/
 .aider*
 .clinerules
+
+# Local secrets
+.env
+credentials/srinivasa-hospital.json
