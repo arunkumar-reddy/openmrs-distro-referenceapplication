@@ -78,7 +78,7 @@ services:
       BACKUP_DIR: "/backups"
       # Google Drive settings
       GDRIVE_ENABLED: "true"
-      GDRIVE_FOLDER: "OpenMRS Backups"
+      GDRIVE_FOLDER: "openmrs-backups"
       GDRIVE_RETENTION_DAYS: "30"
       GDRIVE_CREDENTIALS_PATH: "/root/.config/rclone/credentials.json"
     volumes:

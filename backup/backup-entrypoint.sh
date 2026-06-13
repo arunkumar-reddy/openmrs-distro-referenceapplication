@@ -16,7 +16,7 @@ echo "  Local Retention: ${BACKUP_RETENTION_DAYS:-14} days"
 echo "  Output Dir:    ${BACKUP_DIR:-/backups}"
 echo "  Google Drive:  ${GDRIVE_ENABLED:-false}"
 if [ "${GDRIVE_ENABLED:-false}" = "true" ]; then
-  echo "  Drive Folder:  ${GDRIVE_FOLDER:-OpenMRS Backups}"
+  echo "  Drive Folder:  ${GDRIVE_FOLDER:-openmrs-backups}"
   echo "  GDrive Retention: ${GDRIVE_RETENTION_DAYS:-30} days"
 fi
 echo ""
