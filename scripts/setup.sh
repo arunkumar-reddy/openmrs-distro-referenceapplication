@@ -9,7 +9,6 @@ set -euo pipefail
 REPO_URL="${REPO_URL:-https://github.com/arunkumar-reddy/openmrs-distro-referenceapplication.git}"
 INSTALL_DIR="${INSTALL_DIR:-$HOME/openmrs}"
 ENV_FILE="${INSTALL_DIR}/.env"
-BACKUP_CRED_FILE="${INSTALL_DIR}/credentials/srinivasa-hospital.json"
 
 # ── Colors ──────────────────────────────────────────
 RED='\033[0;31m'
@@ -73,39 +72,47 @@ clone_or_update_repo() {
     cd "${INSTALL_DIR}"
 }
 
-# ── Step 2: Ensure .env exists ──────────────────────
-setup_env_file() {
-    if [ -f "${ENV_FILE}" ]; then
-        log_ok ".env file already exists. Keeping current values."
-        return
+# ── Step 2: Verify .env exists ──────────────────────
+check_env_file() {
+    if [ ! -f "${ENV_FILE}" ]; then
+        log_error ".env file not found at ${ENV_FILE}"
+        echo ""
+        echo "  The .env file in the project root contains sensitive credentials"
+        echo "  (database passwords, Google Drive keys, etc.) and must be provided"
+        echo "  manually — it is not generated automatically."
+        echo ""
+        echo "  Create it with:"
+        echo "    cp .env.example .env"
+        echo "  or manually create ~/.openmrs/.env (or your INSTALL_DIR/.env)"
+        echo "  with the required variables."
+        echo ""
+        exit 1
     fi
-
-    log_info "Creating default .env file..."
-    cat > "${ENV_FILE}" <<'EOF'
-# ── Database ──
-OMRS_DB_USER=openmrs
-OMRS_DB_PASSWORD=openmrs
-MYSQL_ROOT_PASSWORD=openmrs
-
-# ── Tag for gateway image ──
-TAG=qa
-
-# ── Backup Service ──
-BACKUP_SCHEDULE="0 2 * * *"
-BACKUP_RETENTION_DAYS=14
-
-# ── Google Drive (optional) ──
-GDRIVE_ENABLED=false
-GDRIVE_FOLDER="openmrs-backups"
-GDRIVE_RETENTION_DAYS=30
-GDRIVE_CREDENTIALS_PATH=/root/.config/rclone/credentials.json
-EOF
-
-    chmod 600 "${ENV_FILE}"
-    log_ok ".env file created. Edit it to customize passwords and settings."
+    log_ok ".env file found."
 }
 
-# ── Step 3: Stop existing containers (update scenario) ──
+# ── Step 3: Validate Google Drive credentials (if enabled) ──
+check_gdrive_credentials() {
+    local gdrive_enabled
+    gdrive_enabled=$(grep -E '^GDRIVE_ENABLED=' "${ENV_FILE}" 2>/dev/null | cut -d= -f2 | tr -d '[:space:]"')
+
+    if [ "${gdrive_enabled}" = "true" ]; then
+        # Credentials path is relative to .env / project root
+        local cred_path="${INSTALL_DIR}/credentials/srinivasa-hospital.json"
+
+        if [ ! -f "${cred_path}" ]; then
+            log_error "Google Drive is enabled but credentials file not found."
+            echo ""
+            echo "  Expected: ${cred_path}"
+            echo "  Set GDRIVE_ENABLED=false in .env to disable Google Drive backups."
+            echo ""
+            exit 1
+        fi
+        log_ok "Google Drive credentials verified: ${cred_path}"
+    fi
+}
+
+# ── Step 4: Stop existing containers (update scenario) ──
 stop_existing_containers() {
     cd "${INSTALL_DIR}"
 
@@ -119,7 +126,7 @@ stop_existing_containers() {
     fi
 }
 
-# ── Step 4: Build custom images (optional) ──────────
+# ── Step 5: Build custom images (optional) ──────────
 build_custom_images() {
     cd "${INSTALL_DIR}"
     local build_backend="${BUILD_BACKEND:-false}"
@@ -139,7 +146,7 @@ build_custom_images() {
     fi
 }
 
-# ── Step 5: Pull latest images ──────────────────────
+# ── Step 6: Pull latest images ──────────────────────
 pull_latest_images() {
     cd "${INSTALL_DIR}"
     log_info "Pulling latest container images..."
@@ -147,7 +154,7 @@ pull_latest_images() {
     log_ok "Images pulled."
 }
 
-# ── Step 6: Start all services ──────────────────────
+# ── Step 7: Start all services ──────────────────────
 start_services() {
     cd "${INSTALL_DIR}"
     log_info "Starting all services with docker compose up -d..."
@@ -309,7 +316,8 @@ main() {
 
     check_prerequisites
     clone_or_update_repo
-    setup_env_file
+    check_env_file
+    check_gdrive_credentials
     stop_existing_containers
 
     if [ "${do_build_backend}" = "true" ] || [ "${do_build_frontend}" = "true" ]; then

@@ -60,25 +60,22 @@ if exist "%INSTALL_DIR%\.git" (
     cd /d "%INSTALL_DIR%"
 )
 
-REM --- Setup .env ---
+REM --- Verify .env exists ---
 if not exist "%INSTALL_DIR%\.env" (
-    echo [INFO] Creating default .env file...
-    (
-        echo OMRS_DB_USER=openmrs
-        echo OMRS_DB_PASSWORD=openmrs
-        echo MYSQL_ROOT_PASSWORD=openmrs
-        echo TAG=qa
-        echo BACKUP_SCHEDULE="0 2 * * *"
-        echo BACKUP_RETENTION_DAYS=14
-        echo GDRIVE_ENABLED=false
-        echo GDRIVE_FOLDER=openmrs-backups
-        echo GDRIVE_RETENTION_DAYS=30
-        echo GDRIVE_CREDENTIALS_PATH=/root/.config/rclone/credentials.json
-    ) > "%INSTALL_DIR%\.env"
-    echo [ OK ] .env file created. Edit it to customize settings.
-) else (
-    echo [ OK ] .env file already exists. Keeping current values.
+    echo [FAIL] .env file not found at %INSTALL_DIR%\.env
+    echo.
+    echo   The .env file in the project root contains sensitive credentials
+    echo   (database passwords, Google Drive keys, etc.) and must be provided
+    echo   manually — it is not generated automatically.
+    echo.
+    echo   Create it with:
+    echo     copy .env.example .env
+    echo   or manually create %INSTALL_DIR%\.env
+    echo   with the required variables.
+    echo.
+    exit /b 1
 )
+echo [ OK ] .env file found.
 echo.
 
 REM --- Stop existing containers (preserves volumes) ---
