@@ -122,11 +122,11 @@ jobs:
           IMAGE_BACKEND=${{ env.IMAGE_BACKEND }}
           IMAGE_FRONTEND=${{ env.IMAGE_FRONTEND }}
 
-          # Update frontend image
-          sed -i "s|image: openmrs/frontend:custom|image: ${REGISTRY}/${REPO}/${IMAGE_FRONTEND}:${SHORT_SHA}|g" docker-compose.yml
+          # Update frontend image (replace the hash portion)
+          sed -i "s|image: ${REGISTRY}/${REPO}/${IMAGE_FRONTEND}:.*|image: ${REGISTRY}/${REPO}/${IMAGE_FRONTEND}:${SHORT_SHA}|" docker-compose.yml
 
-          # Update backend image
-          sed -i "s|image: openmrs/backend:custom|image: ${REGISTRY}/${REPO}/${IMAGE_BACKEND}:${SHORT_SHA}|g" docker-compose.yml
+          # Update backend image (replace the hash portion)
+          sed -i "s|image: ${REGISTRY}/${REPO}/${IMAGE_BACKEND}:.*|image: ${REGISTRY}/${REPO}/${IMAGE_BACKEND}:${SHORT_SHA}|" docker-compose.yml
 
           echo "Updated docker-compose.yml:"
           grep -E "image:" docker-compose.yml
