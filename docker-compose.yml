@@ -10,7 +10,7 @@ services:
       # Replace with 8080:80 if 80 is already occupied
 
   frontend:
-    image: openmrs/frontend:custom
+    image: ghcr.io/arunkumar-reddy/openmrs-distro-referenceapplication/frontend:44934f3c775c4af1e017fce6a961f538f7844a1d
     restart: "unless-stopped"
     environment:
       SPA_PATH: /openmrs/spa
@@ -24,7 +24,7 @@ services:
       - backend
 
   backend:
-    image: openmrs/backend:custom
+    image: ghcr.io/arunkumar-reddy/openmrs-distro-referenceapplication/backend:44934f3c775c4af1e017fce6a961f538f7844a1d
     restart: "unless-stopped"
     depends_on:
       - db
