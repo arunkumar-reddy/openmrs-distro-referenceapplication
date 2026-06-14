@@ -116,16 +116,17 @@ jobs:
       - name: Update docker-compose.yml with image tags
         run: |
           SHA=${{ github.sha }}
+          SHORT_SHA=${SHA:0:7}
           REGISTRY=${{ env.REGISTRY }}
           REPO=${{ github.repository }}
           IMAGE_BACKEND=${{ env.IMAGE_BACKEND }}
           IMAGE_FRONTEND=${{ env.IMAGE_FRONTEND }}
 
           # Update frontend image
-          sed -i "s|image: openmrs/frontend:custom|image: ${REGISTRY}/${REPO}/${IMAGE_FRONTEND}:${SHA}|g" docker-compose.yml
+          sed -i "s|image: openmrs/frontend:custom|image: ${REGISTRY}/${REPO}/${IMAGE_FRONTEND}:${SHORT_SHA}|g" docker-compose.yml
 
           # Update backend image
-          sed -i "s|image: openmrs/backend:custom|image: ${REGISTRY}/${REPO}/${IMAGE_BACKEND}:${SHA}|g" docker-compose.yml
+          sed -i "s|image: openmrs/backend:custom|image: ${REGISTRY}/${REPO}/${IMAGE_BACKEND}:${SHORT_SHA}|g" docker-compose.yml
 
           echo "Updated docker-compose.yml:"
           grep -E "image:" docker-compose.yml
