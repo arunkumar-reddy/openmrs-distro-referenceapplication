@@ -14,15 +14,6 @@ map $http_x_real_ip $forwarded_ip {
   default $remote_addr;
 }
 
-upstream frontend {
-  # always assume the frontend will be available
-  server frontend max_fails=0;
-}
-
-upstream backend {
-  server backend:8080 max_fails=0;
-}
-
 server {
   listen [::]:80;
   listen 80;
@@ -41,7 +32,7 @@ server {
   listen [::]:443 ssl;
   listen 443 ssl;
   http2 on;
-  server_name ${CERT_WEB_DOMAIN_COMMON_NAME}; 
+  server_name ${CERT_WEB_DOMAIN_COMMON_NAME};
 
   ssl_certificate /etc/letsencrypt/live/${CERT_WEB_DOMAIN_COMMON_NAME}/fullchain.pem;
   ssl_certificate_key /etc/letsencrypt/live/${CERT_WEB_DOMAIN_COMMON_NAME}/privkey.pem;
@@ -93,6 +84,8 @@ server {
   # all redirects are relative to the gateway
   absolute_redirect off;
 
+  resolver 127.0.0.11 valid=30s ipv6=off;
+
   location ~ /.well-known/acme-challenge {
     allow all;
     root /var/www/certbot;
@@ -103,12 +96,21 @@ server {
   }
 
   location /openmrs/spa/ {
-    proxy_pass http://frontend/;
-    proxy_redirect http://$host/ /openmrs/spa/;
+    set $frontend http://frontend;
+    rewrite ^/openmrs/spa/(.*) /$1 break;
+    proxy_pass $frontend;
   }
 
   location /openmrs {
-    proxy_pass http://backend;
+    set $backend http://backend:8080;
+    proxy_read_timeout 300s;
+    proxy_pass $backend;
+  }
+
+  location /grafana {
+    set $grafana http://grafana:3000;
+    proxy_read_timeout 300s;
+    proxy_pass $grafana;
   }
 
   location = / {
