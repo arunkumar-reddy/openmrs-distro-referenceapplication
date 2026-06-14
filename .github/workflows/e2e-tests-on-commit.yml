@@ -1,8 +1,9 @@
 name: Run E2E Tests on PRs and Commits
 
 on:
-  push:
-    branches: [main]
+  # Disabled push trigger — runs too often on main
+  # push:
+  #   branches: [main]
   pull_request:
     branches: [main]
   workflow_dispatch:
