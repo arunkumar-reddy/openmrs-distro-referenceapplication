@@ -112,8 +112,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GH_PUSH_TOKEN }}
 
       - name: Update docker-compose.yml with image tags
         run: |
