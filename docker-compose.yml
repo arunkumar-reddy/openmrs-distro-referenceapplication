@@ -64,9 +64,7 @@ services:
   # Periodically dumps the database and writes .sql.gz files to ./backups/
   # Optionally uploads to Google Drive for offsite redundancy
   db-backup:
-    build:
-      context: .
-      dockerfile: backup/Dockerfile
+    image: ghcr.io/arunkumar-reddy/openmrs-distro-referenceapplication/db-backup:44934f3
     restart: "unless-stopped"
     environment:
       MYSQL_HOST: db
