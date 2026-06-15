@@ -51,7 +51,6 @@ REM --- Clone or update repo ---
 if exist "%INSTALL_DIR%\.git" (
     echo [INFO] Repository already exists. Pulling latest changes...
     cd /d "%INSTALL_DIR%"
-    git stash 2>nul
     git pull --rebase
 ) else (
     echo [INFO] Cloning repository to %INSTALL_DIR%...
@@ -65,7 +64,7 @@ if not exist "%INSTALL_DIR%\.env" (
     echo [FAIL] .env file not found at %INSTALL_DIR%\.env
     echo.
     echo   The .env file in the project root contains sensitive credentials
-    echo   (database passwords, Google Drive keys, etc.) and must be provided
+    echo   ^(database passwords, Google Drive keys, etc.^) and must be provided
     echo   manually — it is not generated automatically.
     echo.
     echo   Create it with:
@@ -78,11 +77,11 @@ if not exist "%INSTALL_DIR%\.env" (
 echo [ OK ] .env file found.
 echo.
 
-REM --- Stop existing containers (preserves volumes) ---
+REM --- Stop existing containers ^(preserves volumes^) ---
 echo [INFO] Checking for running containers...
 docker compose ps --services --filter "status=running" >nul 2>&1
 if %ERRORLEVEL% equ 0 (
-    echo [INFO] Stopping existing containers (preserving volumes)...
+    echo [INFO] Stopping existing containers ^(preserving volumes^)...
     docker compose down
     echo [ OK ] Existing containers stopped. Volumes preserved.
 ) else (
@@ -111,10 +110,10 @@ echo   Default login:
 echo     Username: admin
 echo     Password: Admin123
 echo.
-echo   Useful commands (run from %INSTALL_DIR%):
+echo   Useful commands ^(run from %INSTALL_DIR%^):
 echo     docker compose logs -f          ^> View logs
 echo     docker compose ps               ^> Service status
-echo     docker compose down             ^> Stop (keeps data)
+echo     docker compose down             ^> Stop ^(keeps data^)
 echo     docker compose down --volumes   ^> Stop and DELETE data
 echo.
 echo   Data Preservation:
