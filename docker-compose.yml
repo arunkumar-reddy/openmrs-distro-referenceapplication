@@ -10,7 +10,7 @@ services:
       # Replace with 8080:80 if 80 is already occupied
 
   frontend:
-    image: ghcr.io/arunkumar-reddy/openmrs-distro-referenceapplication/frontend:89f9026
+    image: ghcr.io/arunkumar-reddy/openmrs-distro-referenceapplication/frontend:94efa2f
     restart: "unless-stopped"
     environment:
       SPA_PATH: /openmrs/spa
@@ -24,7 +24,7 @@ services:
       - backend
 
   backend:
-    image: ghcr.io/arunkumar-reddy/openmrs-distro-referenceapplication/backend:89f9026
+    image: ghcr.io/arunkumar-reddy/openmrs-distro-referenceapplication/backend:94efa2f
     restart: "unless-stopped"
     depends_on:
       - db
@@ -64,7 +64,7 @@ services:
   # Periodically dumps the database and writes .sql.gz files to ./backups/
   # Optionally uploads to Google Drive for offsite redundancy
   db-backup:
-    image: ghcr.io/arunkumar-reddy/openmrs-distro-referenceapplication/db-backup:89f9026
+    image: ghcr.io/arunkumar-reddy/openmrs-distro-referenceapplication/db-backup:94efa2f
     restart: "unless-stopped"
     environment:
       MYSQL_HOST: db
